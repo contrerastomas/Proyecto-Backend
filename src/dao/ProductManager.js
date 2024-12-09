@@ -64,6 +64,7 @@ export  class ProductManager {
     }
 
     async getProducts() {
+
         try {
             if (fs.existsSync(this.#path)) {
                 const data = await fs.promises.readFile(this.#path, "utf-8");

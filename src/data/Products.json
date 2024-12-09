@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "title": "samsung",
+        "description": "s20 plus",
+        "price": 150,
+        "thumbnail": "",
+        "code": "a32r",
+        "stock": 10
+    },
+    {
+        "id": 2,
+        "title": "iphone",
+        "description": "x",
+        "price": 160,
+        "thumbnail": "",
+        "code": "a41nr",
+        "stock": 14
+    },
+    {
+        "id": 3,
+        "title": "xiaomi",
+        "description": "mia3",
+        "price": 190,
+        "thumbnail": "",
+        "code": "a35r",
+        "stock": 11
+    },
+    {
+        "id": 4,
+        "title": "motorola",
+        "description": "m5",
+        "price": 120,
+        "thumbnail": "",
+        "code": "a37r",
+        "stock": 18
+    },
+    {
+        "id": 5,
+        "title": "alcatel",
+        "description": "s",
+        "price": 100,
+        "thumbnail": "",
+        "code": "a39r",
+        "stock": 19
+    }
+]

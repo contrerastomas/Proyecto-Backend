@@ -65,20 +65,14 @@ export  class ProductManager {
 
     async getProducts() {
 
-        try {
             if (fs.existsSync(this.#path)) {
-                const data = await fs.promises.readFile(this.#path, "utf-8");
-                console.log("Contenido del archivo:", data);
+                let data = await fs.promises.readFile(this.#path,{encoding:"utf-8"});
                 return JSON.parse(data);
             } else {
                 console.log("prodcutos no encontrados, devolviendo array vacío.");
                 return [];
-            }
-        } catch (error) {
-            console.error("Error leyendo el archivo:", error);
-            return [];
-        }
     }
+}
 
     async getListProducts() {
         let products = await this.getProducts();
@@ -104,6 +98,16 @@ export  class ProductManager {
         }
     
         return productFound;
+    }
+
+    async updateProductList(products) {
+
+        try {
+            await fs.writeFile(this.#path, JSON.stringify(products, null, 4), {encoding:"utf-8"});
+        } catch (error) {
+            console.error("Error al guardar el archivo:", error);
+            throw new Error("Error al actualizar la lista de productos.");
+        }
     }
     
 

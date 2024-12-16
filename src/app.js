@@ -15,7 +15,7 @@ app.use("/carts",cartsRouter)
 app.get("/", (req, res) => {
     res.send(`Bienvenido al server`)
 })
-
+/*
 app.get("/products", async (req, res) => {
     res.setHeader('content-type', 'application/json')
     try {
@@ -166,7 +166,7 @@ app.delete("/products/:pid", async (req, res) => {
     }
 
 })
-
+*/
 
 app.get("*", (req, res) => {
     res.status(404).send(`Error 404 | page not found `)

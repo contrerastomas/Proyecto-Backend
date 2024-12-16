@@ -1,135 +1,132 @@
+import { error } from "console";
 import fs from "fs"
-//let rutaArchivo = "../data/Products.json"
 
-export  class ProductManager {
+
+export class ProductManager {
 
     static ganancia = 0.15
-    #path = ""
+    static #path = ""
 
-    constructor(rutaArchivo) {
+    static setPath(rutaArchivo = "") {
         this.#path = rutaArchivo
     }
-
-
-    async addProduct(title, description, price = 0, thumbnail, code, stock = 0) {
-
-        //validaciones 
-        if (!title || !price || !stock || !description || !code) {
-            console.log(`por favor complete todos los campos requeridos 
-                title
-                price
-                stock  
-                description
-                code
-                `)
-            return
+    /*
+        constructor(rutaArchivo) {
+            this.#path = rutaArchivo
         }
+    */
 
-        let products = await this.getProducts()
-        //generar id
-
-        let id = 1
-        if (products.length > 0) {
-            id=Math.max(...products.map(d=>d.id))+1
-        }
-
-
-        let nuevoProducto = {
-            id,
-            title,
-            description,
-            price,
-            thumbnail,
-            code,
-            stock,
-        }
-
-        let existe = products.filter(el => {
-            return el.code === nuevoProducto.code
-
-        })
-
-        if (existe.length > 0) {
-            console.log(`los productos no pueden tener el mismo valor para "code",
-                el producto ${nuevoProducto.title} debe tener distinto "code"
-                `)
-                return
-        }
-        
-
-            products.push(nuevoProducto)
-            console.log(` el producto ${nuevoProducto.title} fue agregado con exito`)
-            
-            await fs.promises.writeFile(this.#path,JSON.stringify(products,null,4))
-    }
-
-    async getProducts() {
-
+    static async getProducts() {
+        try {
             if (fs.existsSync(this.#path)) {
-                let data = await fs.promises.readFile(this.#path,{encoding:"utf-8"});
+                const data = await fs.promises.readFile(this.#path, { encoding: "utf-8" });
                 return JSON.parse(data);
             } else {
-                console.log("prodcutos no encontrados, devolviendo array vacío.");
+                console.log(`Path configurado: ${this.#path}`);
+                console.log(`Productos no encontrados, devolviendo array vacío.`);
                 return [];
+            }
+        } catch (error) {
+            console.error(`Error al leer los productos desde ${this.#path}:`, error);
+            return [];
+        }
     }
-}
+
+
+    static async getProductsById(id) {
+        let products = await this.getProducts()
+        let product = products.find(p => p.id === id)
+        return product
+    }
+
+    static async addProduct(product = {}) {
+
+        let products = await this.getProducts()
+        let id = 1
+        if (products.length > 0) {
+            id = Math.max(...products.map(d => d.id)) + 1
+        }
+
+
+        let newProduct = {
+            id,
+            ...product
+        }
+
+        products.push(newProduct)
+        console.log(` el producto ${newProduct} fue agregado con exito`)
+
+        await fs.promises.writeFile(this.#path, JSON.stringify(products, null, 4))
+        return newProduct
+    }
+
 
     async getListProducts() {
         let products = await this.getProducts();
         if (products.length === 0) {
             return "No hay productos disponibles.";
         }
-    
+
         let lista = `Lista de productos:\n`;
         products.forEach(p => {
             lista += `
     Producto: ${p.title} | Modelo: ${p.description} | Precio: $${p.price + (p.price * ProductManager.ganancia)} | Stock: ${p.stock}`;
         });
-    
+
         return lista;
     }
-    
-    async getProductsById(num) {
+
+    static async getProductsByTittle(title) {
         let products = await this.getProducts();
-        let productFound = products.find(el => el.id === num);
-    
+        let productFound = products.find(el => el.id === title);
+
         if (!productFound) {
-            return `No existe un producto con el ID: ${num}`;
+            return `No existe un producto con el ID: ${title}`;
         }
-    
+
         return productFound;
     }
 
-    async updateProductList(products) {
+    static async changeProducts(id,changes={}){
+        let products = await this.getProducts()
+        let productIndex=products.findIndex(p=>p.id===id)
+        if(productIndex===-1){
+            throw new Error(`Producto con id:${id} no encontrado`)
+        }
+        products[productIndex]={
+            ...products[productIndex],
+            ...changes,
+            id
+        }
+
+
+        await fs.promises.writeFile(this.#path, JSON.stringify(products, null, 4))
+        return products[productIndex]
+
+
+    }
+
+    static async updateProductList(products) {
 
         try {
-            await fs.writeFile(this.#path, JSON.stringify(products, null, 4), {encoding:"utf-8"});
+            await fs.writeFile(this.#path, JSON.stringify(products, null, 4), { encoding: "utf-8" });
         } catch (error) {
             console.error("Error al guardar el archivo:", error);
             throw new Error("Error al actualizar la lista de productos.");
         }
     }
-    
 
+    static async deleteProduct(id) {
+        const products = await this.getProducts(); 
+        const productIndex = products.findIndex(product => product.id === id);
+        
+        if (productIndex === -1) {
+            throw new Error(`Producto con id: ${id} no encontrado.`);
+        }
+        products.splice(productIndex, 1);
+
+        await fs.promises.writeFile(this.#path, JSON.stringify(products, null, 4));
+        
+        return products;
+    }
 }
-
-/*
-const consultas = async () => {
-
-    const productManager = new ProductManager(rutaArchivo)
-
-    let products = await productManager.getListProducts()
-
-//agregando productos
-await productManager.addProduct("samsung", "s20 plus", 150, "", "a32r", 10)
-await productManager.addProduct("iphone", "x", 160, "", "a41nr", 14)
-await productManager.addProduct("xiaomi", "mia3", 190, "", "a35r", 11)
-await productManager.addProduct("motorola", "m5", 120, "", "a37r", 18)
-await productManager.addProduct("alcatel", "s", 100, "", "a39r", 19)
-
-console.log(products);
-
-}
-
-consultas()
-*/

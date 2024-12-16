@@ -32,7 +32,6 @@ export class ProductManager {
         }
     }
 
-
     static async getProductsById(id) {
         let products = await this.getProducts()
         let product = products.find(p => p.id === id)
@@ -60,7 +59,7 @@ export class ProductManager {
         return newProduct
     }
 
-
+/*
     async getListProducts() {
         let products = await this.getProducts();
         if (products.length === 0) {
@@ -75,7 +74,7 @@ export class ProductManager {
 
         return lista;
     }
-
+*/
     static async getProductsByTittle(title) {
         let products = await this.getProducts();
         let productFound = products.find(el => el.id === title);
@@ -87,13 +86,13 @@ export class ProductManager {
         return productFound;
     }
 
-    static async changeProducts(id,changes={}){
+    static async changeProducts(id, changes = {}) {
         let products = await this.getProducts()
-        let productIndex=products.findIndex(p=>p.id===id)
-        if(productIndex===-1){
+        let productIndex = products.findIndex(p => p.id === id)
+        if (productIndex === -1) {
             throw new Error(`Producto con id:${id} no encontrado`)
         }
-        products[productIndex]={
+        products[productIndex] = {
             ...products[productIndex],
             ...changes,
             id
@@ -117,16 +116,16 @@ export class ProductManager {
     }
 
     static async deleteProduct(id) {
-        const products = await this.getProducts(); 
+        const products = await this.getProducts();
         const productIndex = products.findIndex(product => product.id === id);
-        
+
         if (productIndex === -1) {
             throw new Error(`Producto con id: ${id} no encontrado.`);
         }
         products.splice(productIndex, 1);
 
         await fs.promises.writeFile(this.#path, JSON.stringify(products, null, 4));
-        
+
         return products;
     }
 }

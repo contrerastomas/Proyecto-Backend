@@ -7,6 +7,15 @@ router.get("/", async (req, res) => {
     res.setHeader('content-type', 'application/json')
     try {
         let products = await ProductManager.getProducts();
+        let {limit} =req.query
+        if (limit) {
+            limit = Number(limit);
+            if (isNaN(limit) || limit <= 0) {
+                return res.status(400).json({ error: "El valor de 'limit' debe ser un número positivo válido." });
+            }
+            products = products.slice(0, limit);
+        }
+
         res.status(200).json({ products });
     } catch (error) {
         console.log(error)

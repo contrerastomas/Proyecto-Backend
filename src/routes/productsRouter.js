@@ -148,7 +148,7 @@ router.delete("/:id",async(req, res) => {
             res.setHeader("Content-type", "Application/json")
             return res.status(400).json({ Error: `el id debe ser numerico` })
         }
-        const deletedProduct = await ProductManager.deleteProduct(id);
+        let deletedProduct = await ProductManager.deleteProduct(id);
         return res.status(200).json({payload:`El producto con id:${id} fue eliminado con exito.`})
     
         } catch (error) {
